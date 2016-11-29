@@ -47,4 +47,8 @@ public class Messagerie {
         }
         return result;
     }
+
+    public void leave() {
+        System.exit(0);
+    }
 }

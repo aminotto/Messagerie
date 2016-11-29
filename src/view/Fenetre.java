@@ -1,5 +1,7 @@
 package view;
 
+import controller.ControllerBarMenu;
+
 import javax.swing.*;
 import javax.swing.text.DefaultCaret;
 import java.awt.*;
@@ -65,5 +67,10 @@ public class Fenetre extends JFrame {
         chat.setLayout(new BoxLayout(chat, BoxLayout.Y_AXIS));
         chat.add(listeMessage);
         chat.add(sender);
+    }
+
+    public void setControllerBarMenu(ControllerBarMenu controllerBarMenu) {
+        connexion.addActionListener(controllerBarMenu);
+        quitter.addActionListener(controllerBarMenu);
     }
 }
