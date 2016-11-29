@@ -1,6 +1,7 @@
 package view;
 
 import controller.ControllerBarMenu;
+import controller.ControllerMessageSender;
 
 import javax.swing.*;
 import javax.swing.text.DefaultCaret;
@@ -72,5 +73,17 @@ public class Fenetre extends JFrame {
     public void setControllerBarMenu(ControllerBarMenu controllerBarMenu) {
         connexion.addActionListener(controllerBarMenu);
         quitter.addActionListener(controllerBarMenu);
+    }
+
+    public void setControllerMessageSender(ControllerMessageSender controllerMessageSender) {
+        envoyer.addActionListener(controllerMessageSender);
+    }
+
+    public String getTextToSend() {
+        return jtf_message.getText();
+    }
+
+    public void clearMessageField() {
+        jtf_message.setText("");
     }
 }
