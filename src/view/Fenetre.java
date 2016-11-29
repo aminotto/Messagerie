@@ -2,6 +2,8 @@ package view;
 
 import controller.ControllerBarMenu;
 import controller.ControllerMessageSender;
+import model.Message;
+import model.Messagerie;
 
 import javax.swing.*;
 import javax.swing.text.DefaultCaret;
@@ -9,6 +11,7 @@ import java.awt.*;
 
 public class Fenetre extends JFrame {
 
+    private Messagerie messagerie;
     private JMenuBar menuBar;
     private JMenu fichier;
     private JMenuItem connexion, quitter;
@@ -18,7 +21,8 @@ public class Fenetre extends JFrame {
     private JButton envoyer;
     private JScrollPane scroll;
 
-    public Fenetre() {
+    public Fenetre(Messagerie messagerie) {
+        this.messagerie = messagerie;
         initMenuBar();
         initChat();
         setJMenuBar(menuBar);
@@ -85,5 +89,10 @@ public class Fenetre extends JFrame {
 
     public void clearMessageField() {
         jtf_message.setText("");
+    }
+
+    @Override
+    public void repaint() {
+        jta_listeMessage.setText(messagerie.readMessages());
     }
 }

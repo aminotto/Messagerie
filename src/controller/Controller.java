@@ -16,5 +16,6 @@ public abstract class Controller {
     public static void generateController(Messagerie messagerie, Fenetre fenetre) {
         new ControllerBarMenu(messagerie, fenetre);
         new ControllerMessageSender(messagerie, fenetre);
+        new ControllerTimer(messagerie, fenetre);
     }
 }
