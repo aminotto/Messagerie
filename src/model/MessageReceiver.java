@@ -6,18 +6,18 @@ import java.io.ObjectInputStream;
 public class MessageReceiver implements Runnable {
 
     private ObjectInputStream in;
-    private Messagerie messagerie;
+    private Conversation conversation;
 
-    public MessageReceiver(ObjectInputStream in, Messagerie messagerie) {
+    public MessageReceiver(ObjectInputStream in, Conversation conversation) {
         this.in=in;
-        this.messagerie=messagerie;
+        this.conversation=conversation;
     }
 
     @Override
     public void run() {
         while (true) {
             try {
-                messagerie.addMessage((Message) in.readObject());
+                conversation.addMessage((Message) in.readObject());
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (ClassNotFoundException e) {

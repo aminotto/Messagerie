@@ -2,7 +2,6 @@ package view;
 
 import controller.ControllerBarMenu;
 import controller.ControllerMessageSender;
-import model.Message;
 import model.Messagerie;
 
 import javax.swing.*;
@@ -20,6 +19,7 @@ public class Fenetre extends JFrame {
     private JTextArea jta_listeMessage;
     private JButton envoyer;
     private JScrollPane scroll;
+    private JTabbedPane onglets = new JTabbedPane(SwingConstants.TOP);
 
     public Fenetre(Messagerie messagerie) {
         this.messagerie = messagerie;
@@ -62,6 +62,7 @@ public class Fenetre extends JFrame {
         scroll.setPreferredSize(new Dimension(480, 180));
         scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         listeMessage.add(scroll);
+        onglets.addTab("Messages", listeMessage);
         jtf_message = new JTextField();
         jtf_message.setPreferredSize(new Dimension(300, 20));
         envoyer = new JButton("Envoyer");
@@ -70,7 +71,7 @@ public class Fenetre extends JFrame {
         sender.add(envoyer);
         chat = new JPanel();
         chat.setLayout(new BoxLayout(chat, BoxLayout.Y_AXIS));
-        chat.add(listeMessage);
+        chat.add(onglets);
         chat.add(sender);
     }
 
@@ -91,8 +92,26 @@ public class Fenetre extends JFrame {
         jtf_message.setText("");
     }
 
+    public int getSelectedTab() {
+        return onglets.getSelectedIndex();
+    }
+
     @Override
     public void repaint() {
-        jta_listeMessage.setText(messagerie.readMessages());
+        if(!messagerie.getConversations().isEmpty()) {
+
+            int selectedTab = onglets.getSelectedIndex();
+            onglets.removeAll();
+
+            for (int i=0; i<messagerie.getConversations().size(); i++) {
+                if(selectedTab==i) {
+                    onglets.addTab(messagerie.getConversations().get(i).getReceiverName(), listeMessage);
+                    onglets.setSelectedIndex(i);
+                }else {
+                    onglets.addTab(messagerie.getConversations().get(i).getReceiverName(), null);
+                }
+            }
+            jta_listeMessage.setText(messagerie.getConversations().get(onglets.getSelectedIndex()).readMessages());
+        }
     }
 }

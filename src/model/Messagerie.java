@@ -7,21 +7,11 @@ import java.util.ArrayList;
  */
 public class Messagerie {
 
-    private ArrayList<Message> messages;
-    private ArrayList<Message> toSendMessages;
+    private ArrayList<Conversation> conversations;
 
     public Messagerie() {
-        messages = new ArrayList<Message>();
-        toSendMessages = new ArrayList<Message>();
+        conversations = new ArrayList<Conversation>();
         waitForConnectionOnPort(2042);
-    }
-
-    public ArrayList<Message> getMessages() {
-        return messages;
-    }
-
-    public ArrayList<Message> getToSendMessages() {
-        return toSendMessages;
     }
 
     private void waitForConnectionOnPort(int port) {
@@ -29,24 +19,19 @@ public class Messagerie {
     }
 
     public void connectTo(String ip, int port) {
-        new Thread(new ConnectionTo(ip, port, this)).start();
+        Conversation conversation = new Conversation();
+        conversations.add(conversation);
+        conversation.connectTo(ip, port);
     }
 
-    public void addMessage(Message message) {
-        messages.add(message);
+    public void addConversation(Conversation conversation) {
+        conversations.add(conversation);
     }
 
-    public void send(Message message) {
-        toSendMessages.add(message);
+    public ArrayList<Conversation> getConversations() {
+        return conversations;
     }
 
-    public String readMessages() {
-        String result = "";
-        for(int i=0; i<messages.size(); i++) {
-            result += messages.get(i).toString() + "\n";
-        }
-        return result;
-    }
 
     public void leave() {
         System.exit(0);

@@ -10,12 +10,12 @@ public class ConnectionTo implements Runnable {
     private String ip;
     private int port;
     private Socket socket;
-    private Messagerie messagerie;
+    private Conversation conversation;
 
-    public ConnectionTo(String ip, int port, Messagerie messagerie) {
+    public ConnectionTo(String ip, int port, Conversation conversation) {
         this.ip=ip;
         this.port=port;
-        this.messagerie=messagerie;
+        this.conversation=conversation;
     }
 
     @Override
@@ -23,13 +23,15 @@ public class ConnectionTo implements Runnable {
 
         try {
             socket = new Socket(ip, port);
+            conversation.setReceiverName(socket.getRemoteSocketAddress().toString());
+            conversation.addMessage(new Message("System", "Connexion réussie !"));
 
             ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
             out.flush();
             ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
 
-            new Thread(new MessageReceiver(in, messagerie)).start();
-            new Thread(new MessageSender(out, messagerie)).start();
+            new Thread(new MessageReceiver(in, conversation)).start();
+            new Thread(new MessageSender(out, conversation)).start();
 
         } catch (IOException e) {
             e.printStackTrace();

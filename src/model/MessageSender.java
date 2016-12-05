@@ -6,11 +6,11 @@ import java.io.ObjectOutputStream;
 public class MessageSender implements Runnable {
 
     private ObjectOutputStream out;
-    private Messagerie messagerie;
+    private Conversation conversation;
 
-    public MessageSender(ObjectOutputStream out, Messagerie messagerie) {
+    public MessageSender(ObjectOutputStream out, Conversation conversation) {
         this.out=out;
-        this.messagerie=messagerie;
+        this.conversation=conversation;
     }
 
     @Override
@@ -21,17 +21,17 @@ public class MessageSender implements Runnable {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            if(!messagerie.getToSendMessages().isEmpty()) {
-                for(int i = 0; i<messagerie.getToSendMessages().size(); i++) {
+            if(!conversation.getToSendMessages().isEmpty()) {
+                for(int i = 0; i<conversation.getToSendMessages().size(); i++) {
                     try {
-                        out.writeObject(messagerie.getToSendMessages().get(i));
+                        out.writeObject(conversation.getToSendMessages().get(i));
                         out.flush();
-                        messagerie.addMessage(messagerie.getToSendMessages().get(i));
+                        conversation.addMessage(conversation.getToSendMessages().get(i));
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
-                messagerie.getToSendMessages().clear();
+                conversation.getToSendMessages().clear();
             }
         }
     }
