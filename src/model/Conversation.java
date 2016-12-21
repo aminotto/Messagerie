@@ -20,7 +20,16 @@ public class Conversation {
         return messages;
     }
 
-    public ArrayList<Message> getToSendMessages() {
+    public synchronized ArrayList<Message> getToSendMessages() {
+        while (toSendMessages.isEmpty()) {
+            try {
+                wait();
+                System.out.print("ok");
+            }
+            catch(InterruptedException ie) {
+                ie.printStackTrace();
+            }
+        }
         return toSendMessages;
     }
 
@@ -33,8 +42,9 @@ public class Conversation {
         messages.add(message);
     }
 
-    public void send(Message message) {
+    public synchronized void send(Message message) {
         toSendMessages.add(message);
+        notify();
     }
 
     public String readMessages() {

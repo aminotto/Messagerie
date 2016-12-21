@@ -15,24 +15,17 @@ public class MessageSender implements Runnable {
 
     @Override
     public void run() {
-        while (true) { //Note : chercher à régler ce problème de pause
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            if(!conversation.getToSendMessages().isEmpty()) {
-                for(int i = 0; i<conversation.getToSendMessages().size(); i++) {
-                    try {
-                        out.writeObject(conversation.getToSendMessages().get(i));
-                        out.flush();
-                        conversation.addMessage(conversation.getToSendMessages().get(i));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+        while (true) {
+            for(int i = 0; i<conversation.getToSendMessages().size(); i++) {
+                try {
+                    out.writeObject(conversation.getToSendMessages().get(i));
+                    out.flush();
+                    conversation.addMessage(conversation.getToSendMessages().get(i));
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-                conversation.getToSendMessages().clear();
             }
+            conversation.getToSendMessages().clear();
         }
     }
 }
