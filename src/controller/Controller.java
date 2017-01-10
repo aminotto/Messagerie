@@ -17,5 +17,6 @@ public abstract class Controller {
         new ControllerBarMenu(messagerie, fenetre);
         new ControllerMessageSender(messagerie, fenetre);
         new ControllerTimer(messagerie, fenetre);
+        new ControllerListUser(messagerie, fenetre);
     }
 }

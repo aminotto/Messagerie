@@ -1,12 +1,16 @@
 package view;
 
-import controller.ControllerBarMenu;
-import controller.ControllerMessageSender;
-import model.Messagerie;
+import client.controller.ControllerBarMenu;
+import client.controller.ControllerListUser;
+import client.controller.ControllerMessageSender;
+import client.model.Messagerie;
+import client.model.Utilisateur;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.text.DefaultCaret;
 import java.awt.*;
+import java.util.ArrayList;
 
 public class Fenetre extends JFrame {
 
@@ -14,19 +18,28 @@ public class Fenetre extends JFrame {
     private JMenuBar menuBar;
     private JMenu fichier;
     private JMenuItem connexion, quitter;
-    private JPanel chat, listeMessage, sender;
+    private JPanel global, listeUser, chat, listeMessage, sender;
     private JTextField jtf_message;
     private JTextArea jta_listeMessage;
     private JButton envoyer;
-    private JScrollPane scroll;
+    private JScrollPane scrollMessage, scrollUser;
     private JTabbedPane onglets = new JTabbedPane(SwingConstants.TOP);
+    private JList liste;
+    private DefaultListModel modelList;
 
     public Fenetre(Messagerie messagerie) {
         this.messagerie = messagerie;
+        init();
+    }
+
+    private void init() {
+        global = new JPanel();
+        global.setLayout(new BoxLayout(global, BoxLayout.X_AXIS));
         initMenuBar();
         initChat();
+        initListeUser();
         setJMenuBar(menuBar);
-        setContentPane(chat);
+        setContentPane(global);
         pack();
         setTitle("Messagerie");
         setResizable(false);
@@ -51,20 +64,19 @@ public class Fenetre extends JFrame {
     private void initChat() {
 
         listeMessage = new JPanel();
-        listeMessage.setPreferredSize(new Dimension(500, 200));
         sender = new JPanel();
-        sender.setPreferredSize(new Dimension(500, 50));
+        sender.setPreferredSize(new Dimension(400, 50));
         jta_listeMessage = new JTextArea("En attente de message...");
         jta_listeMessage.setEditable(false);
         DefaultCaret caret = (DefaultCaret) jta_listeMessage.getCaret();
         caret.setUpdatePolicy(DefaultCaret.UPDATE_WHEN_ON_EDT);
-        scroll = new JScrollPane(jta_listeMessage);
-        scroll.setPreferredSize(new Dimension(480, 180));
-        scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        listeMessage.add(scroll);
+        scrollMessage = new JScrollPane(jta_listeMessage);
+        scrollMessage.setPreferredSize(new Dimension(400, 200));
+        scrollMessage.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        listeMessage.add(scrollMessage);
         onglets.addTab("Messages", listeMessage);
         jtf_message = new JTextField();
-        jtf_message.setPreferredSize(new Dimension(300, 20));
+        jtf_message.setPreferredSize(new Dimension(200, 20));
         envoyer = new JButton("Envoyer");
         envoyer.setActionCommand("send");
         sender.add(jtf_message);
@@ -73,6 +85,20 @@ public class Fenetre extends JFrame {
         chat.setLayout(new BoxLayout(chat, BoxLayout.Y_AXIS));
         chat.add(onglets);
         chat.add(sender);
+        global.add(chat);
+    }
+
+    private void initListeUser() {
+        listeUser = new JPanel();
+        modelList = new DefaultListModel();
+        liste = new JList(modelList);
+        modelList.addElement("aucune connexion...");
+        scrollUser = new JScrollPane(liste);
+        scrollUser.setPreferredSize(new Dimension(150, 220));
+        scrollUser.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        listeUser.add(scrollUser);
+        listeUser.setBorder(new EmptyBorder(15, 0, 0, 0));
+        global.add(listeUser);
     }
 
     public void setControllerBarMenu(ControllerBarMenu controllerBarMenu) {
@@ -82,6 +108,10 @@ public class Fenetre extends JFrame {
 
     public void setControllerMessageSender(ControllerMessageSender controllerMessageSender) {
         envoyer.addActionListener(controllerMessageSender);
+    }
+
+    public void setControllerListUser(ControllerListUser controllerListUser) {
+        liste.addMouseListener(controllerListUser);
     }
 
     public String getTextToSend() {
@@ -98,6 +128,11 @@ public class Fenetre extends JFrame {
 
     @Override
     public void repaint() {
+        updateTab();
+        updateUserList();
+    }
+
+    private void updateTab() {
         if(!messagerie.getConversations().isEmpty()) {
 
             int selectedTab = onglets.getSelectedIndex();
@@ -105,13 +140,33 @@ public class Fenetre extends JFrame {
 
             for (int i=0; i<messagerie.getConversations().size(); i++) {
                 if(selectedTab==i) {
-                    onglets.addTab(messagerie.getConversations().get(i).getReceiverName(), listeMessage);
+                    onglets.addTab(messagerie.getConversations().get(i).getReceiver().getLogin(), listeMessage);
                     onglets.setSelectedIndex(i);
                 }else {
-                    onglets.addTab(messagerie.getConversations().get(i).getReceiverName(), null);
+                    onglets.addTab(messagerie.getConversations().get(i).getReceiver().getLogin(), null);
                 }
             }
             jta_listeMessage.setText(messagerie.getConversations().get(onglets.getSelectedIndex()).readMessages());
+        }
+    }
+
+    public void updateUserList() { // Fait correspondre notre JListe avec notre liste de destinataire
+        ArrayList<Utilisateur> destinataires = messagerie.getDestinataires();
+        if(!destinataires.isEmpty()) {
+            if(destinataires.size()>=modelList.size()) {
+                for (int i = 0; i < destinataires.size(); i++) {
+                    if (i >= modelList.size()) {
+                        modelList.addElement(destinataires.get(i));
+                    } else if (!modelList.getElementAt(i).equals(destinataires.get(i))) {
+                        modelList.setElementAt(destinataires.get(i), i);
+                    }
+                }
+            }
+            else {
+                for(int i=destinataires.size(); i<modelList.size(); i++) {
+                    modelList.removeElementAt(i);
+                }
+            }
         }
     }
 }

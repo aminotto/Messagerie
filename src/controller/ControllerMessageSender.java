@@ -20,7 +20,7 @@ public class ControllerMessageSender extends Controller implements ActionListene
         switch (actionEvent.getActionCommand()) {
 
             case "send":
-                messagerie.getConversations().get(fenetre.getSelectedTab()).send(new Message("pseudo", fenetre.getTextToSend()));
+                messagerie.getConversations().get(fenetre.getSelectedTab()).send(new Message(messagerie.getUtilisateur().getLogin(), fenetre.getTextToSend()));
                 fenetre.clearMessageField();
         }
     }

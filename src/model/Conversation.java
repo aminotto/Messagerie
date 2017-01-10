@@ -2,40 +2,40 @@ package model;
 
 import java.util.ArrayList;
 
-/**
- * Created by aminotto on 04/12/16.
- */
 public class Conversation {
 
     private ArrayList<Message> messages;
     private ArrayList<Message> toSendMessages;
-    private String receiverName; //socké comme ça pour le moment mais faire une classe utilisateur ?
+    private Utilisateur receiver;
 
-    public Conversation(){
+    public Conversation() {
         messages = new ArrayList<Message>();
         toSendMessages = new ArrayList<Message>();
     }
 
-    public ArrayList<Message> getMessages() {
-        return messages;
+    public Conversation(Utilisateur utilisateur){
+        this();
+        this.receiver =utilisateur;
+    }
+
+    public Utilisateur getReceiver() {
+        return receiver;
+    }
+
+    public void setReceiver(Utilisateur receiver) {
+        this.receiver = receiver;
     }
 
     public synchronized ArrayList<Message> getToSendMessages() {
         while (toSendMessages.isEmpty()) {
             try {
                 wait();
-                System.out.print("ok");
             }
             catch(InterruptedException ie) {
                 ie.printStackTrace();
             }
         }
         return toSendMessages;
-    }
-
-
-    public void connectTo(String ip, int port) {
-        new Thread(new ConnectionTo(ip, port, this)).start();
     }
 
     public void addMessage(Message message) {
@@ -53,13 +53,5 @@ public class Conversation {
             result += messages.get(i).toString() + "\n";
         }
         return result;
-    }
-
-    public void setReceiverName(String receiverName) {
-        this.receiverName = receiverName;
-    }
-
-    public String getReceiverName() {
-        return receiverName;
     }
 }

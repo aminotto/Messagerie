@@ -1,16 +1,21 @@
 package model;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
 import java.util.ArrayList;
 
-/**
- * Created by aminotto on 29/11/16.
- */
 public class Messagerie {
 
     private ArrayList<Conversation> conversations;
+    private ArrayList<Utilisateur> destinataires;
+    private Utilisateur utilisateur;
 
     public Messagerie() {
         conversations = new ArrayList<Conversation>();
+        destinataires = new ArrayList<Utilisateur>();
+        utilisateur = new Utilisateur("alexis 2");
         waitForConnectionOnPort(2042);
     }
 
@@ -18,10 +23,42 @@ public class Messagerie {
         new Thread(new PortListener(port, this)).start();
     }
 
-    public void connectTo(String ip, int port) {
-        Conversation conversation = new Conversation();
-        conversations.add(conversation);
-        conversation.connectTo(ip, port);
+    public void connectTo(Utilisateur destinataire) {
+        try {
+            Socket socket = new Socket(destinataire.getIpAdrr(), 2042);
+            Conversation conversation = new Conversation(destinataire);
+            conversation.addMessage(new Message("System", "Connexion réussie !"));
+            conversations.add(conversation);
+
+            ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+            out.flush();
+            ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+
+            out.writeObject(this.utilisateur); // On envoie à notre destinataires nos informations
+
+            new Thread(new MessageReceiver(in, conversation)).start();
+            new Thread(new MessageSender(out, conversation)).start();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void connectToServer(String ip) {
+        try {
+            Socket socket = new Socket(ip, 2043);
+
+            ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+            out.flush();
+            ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+            out.writeObject(this.utilisateur); // On envoie au serveur nos informations pour qu'il les enregistre
+
+            new Thread(new UserListReceiver(in, this)).start(); // Ce thread sert à recevoir la lsite des utilisateurs connectés
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public void addConversation(Conversation conversation) {
@@ -32,6 +69,17 @@ public class Messagerie {
         return conversations;
     }
 
+    public ArrayList<Utilisateur> getDestinataires() {
+        return destinataires;
+    }
+
+    public Utilisateur getUtilisateur() {
+        return utilisateur;
+    }
+
+    public void setDestinataires(ArrayList<Utilisateur> utilisateurs) {
+        this.destinataires = utilisateurs;
+    }
 
     public void leave() {
         System.exit(0);
