@@ -15,7 +15,6 @@ public class Messagerie {
     public Messagerie() {
         conversations = new ArrayList<Conversation>();
         destinataires = new ArrayList<Utilisateur>();
-        utilisateur = new Utilisateur("alexis 2");
         waitForConnectionOnPort(2042);
     }
 
@@ -83,5 +82,9 @@ public class Messagerie {
 
     public void leave() {
         System.exit(0);
+    }
+
+    public void setUtilisateur(Utilisateur utilisateur) {
+        this.utilisateur = utilisateur;
     }
 }

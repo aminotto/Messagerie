@@ -1,10 +1,10 @@
 package view;
 
-import client.controller.ControllerBarMenu;
-import client.controller.ControllerListUser;
-import client.controller.ControllerMessageSender;
-import client.model.Messagerie;
-import client.model.Utilisateur;
+import controller.ControllerBarMenu;
+import controller.ControllerListUser;
+import controller.ControllerMessageSender;
+import model.Messagerie;
+import model.Utilisateur;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
