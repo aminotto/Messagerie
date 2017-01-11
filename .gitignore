@@ -13,4 +13,7 @@ hs_err_pid*
 
 # Intellij Files and Directory #
 .idea
-Messagerie.iml
+src/Client/Messagerie.iml
+src/Server/Server.iml
+src/Client/.idea
+scr/Server/.idea
