@@ -41,7 +41,4 @@ public class Server {
         new Thread(new PortListener(port, this)).start();
     }
 
-    public static void main(String[] args) {
-        new Server();
-    }
 }

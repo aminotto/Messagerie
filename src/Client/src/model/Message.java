@@ -1,6 +1,7 @@
 package model;
 
 import java.io.Serializable;
+import java.security.PublicKey;
 
 public class Message implements Serializable {
 
@@ -15,5 +16,13 @@ public class Message implements Serializable {
     @Override
     public String toString() {
         return sender + " : " + texte;
+    }
+
+    public String getTexte() {
+        return texte;
+    }
+
+    public void setTexte(String texte) {
+        this.texte=texte;
     }
 }

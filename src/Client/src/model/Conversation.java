@@ -1,12 +1,20 @@
 package model;
 
+import security.AES;
+import security.RSA;
+
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Base64;
 
 public class Conversation {
 
     private ArrayList<Message> messages;
     private ArrayList<Message> toSendMessages;
     private Utilisateur receiver;
+    private SecretKey aesKey;
 
     public Conversation() {
         messages = new ArrayList<Message>();
@@ -15,7 +23,8 @@ public class Conversation {
 
     public Conversation(Utilisateur utilisateur){
         this();
-        this.receiver =utilisateur;
+        this.receiver = utilisateur;
+        this.aesKey=AES.generateKey();
     }
 
     public Utilisateur getReceiver() {
@@ -53,5 +62,17 @@ public class Conversation {
             result += messages.get(i).toString() + "\n";
         }
         return result;
+    }
+
+    public byte[] getCryptedAesKey() {
+       return RSA.encryptSecretKey(this.aesKey, receiver.getPublicKey());
+    }
+
+    public void setAesKey(SecretKey sKey) {
+        this.aesKey=sKey;
+    }
+
+    public SecretKey getAesKey() {
+        return aesKey;
     }
 }
